@@ -1,10 +1,6 @@
-Code.load_file("mars_rovers.exs", __DIR__)
-
-ExUnit.start
-ExUnit.configure exclude: :pending, trace: true
-
 defmodule MarsRoversTest do
   use ExUnit.Case
+  doctest MarsRovers
 
   test "executing first data set gives expected results" do
     assert MarsRovers.execute_commands({1, 2, "N"}, ~w(L M L M L M L M M)) == {1, 3, "N"}
@@ -21,5 +17,4 @@ defmodule MarsRoversTest do
     ]
     assert MarsRovers.deploy_rovers([], rovers) == [{1, 3, "N"}, {5, 1, "E"}]
   end
-
 end
