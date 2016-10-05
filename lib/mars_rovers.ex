@@ -1,43 +1,59 @@
 defmodule MarsRovers do
-  def deploy_rovers({boundaries, rovers}, instructions) do
-    Enum.reduce(instructions, rovers, fn {position, commands}, acc ->
-      [execute_commands(position, commands, boundaries) | acc]
-    end)
-    |> Enum.reverse
-  end
-
-  def execute_commands(position, commands, boundaries) do
-    Enum.reduce(commands, position, fn cmd, pos ->
-      pos
-      |> execute_command(cmd)
-      |> verify_within_boundaries!(boundaries)
-    end)
-  end
-
-  def execute_command(position, "M"), do: move(position)
-  def execute_command(position, "R"), do: turn(position, "R")
-  def execute_command(position, "L"), do: turn(position, "L")
-
   defmodule OutOfBoundsError do
     defexception message: "rover moved outside of plateau"
   end
 
-  def verify_within_boundaries!({x, y, _} = position, {max_x, max_y}) when x in 0..max_x and y in 0..max_y do
-    position
+  defmodule Plateau do
+    defstruct size: {5, 5}, rovers: []
   end
-  def verify_within_boundaries!(_, _), do: raise OutOfBoundsError
 
-  def move({x, y, "N"}), do: {x, y + 1, "N"}
-  def move({x, y, "S"}), do: {x, y - 1, "S"}
-  def move({x, y, "E"}), do: {x + 1, y, "E"}
-  def move({x, y, "W"}), do: {x - 1, y, "W"}
+  def deploy_rovers(%Plateau{} = plateau, instructions) do
+    rovers =
+      Enum.reduce(instructions, plateau.rovers, fn {position, commands}, acc ->
+        [execute_commands(position, commands, plateau.size) | acc]
+      end)
+      |> Enum.reverse
 
-  def turn({x, y, "N"}, "R"), do: {x, y, "E"}
-  def turn({x, y, "E"}, "R"), do: {x, y, "S"}
-  def turn({x, y, "S"}, "R"), do: {x, y, "W"}
-  def turn({x, y, "W"}, "R"), do: {x, y, "N"}
-  def turn({x, y, "N"}, "L"), do: {x, y, "W"}
-  def turn({x, y, "E"}, "L"), do: {x, y, "N"}
-  def turn({x, y, "S"}, "L"), do: {x, y, "E"}
-  def turn({x, y, "W"}, "L"), do: {x, y, "S"}
+    %Plateau{plateau | rovers: rovers}
+  end
+
+  def execute_commands(position, commands, plateau_size) do
+    Enum.reduce(commands, position, fn cmd, pos ->
+      pos |> execute_command(cmd, plateau_size)
+    end)
+  end
+
+  defp execute_command({x, y, direction}, "R", _) do
+    case direction do
+      "N" -> {x, y, "E"}
+      "S" -> {x, y, "W"}
+      "E" -> {x, y, "S"}
+      "W" -> {x, y, "N"}
+    end
+  end
+  defp execute_command({x, y, direction}, "L", _) do
+    case direction do
+      "N" -> {x, y, "W"}
+      "S" -> {x, y, "E"}
+      "E" -> {x, y, "N"}
+      "W" -> {x, y, "S"}
+    end
+  end
+  defp execute_command({x, y, direction}, "M", plateau_size) do
+    case direction do
+      "N" -> {x, y + 1, "N"}
+      "S" -> {x, y - 1, "S"}
+      "E" -> {x + 1, y, "E"}
+      "W" -> {x - 1, y, "W"}
+    end
+    |> verify_move!(plateau_size)
+  end
+
+  defp verify_move!({x, y, _} = position, {max_x, max_y}) do
+    if x in 0..max_x and y in 0..max_y do
+      position
+    else
+      raise OutOfBoundsError
+    end
+  end
 end

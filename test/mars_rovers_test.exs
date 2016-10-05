@@ -25,6 +25,7 @@ defmodule MarsRoversTest do
       {{1, 2, "N"}, ~w(L M L M L M L M M)},
       {{3, 3, "E"}, ~w(M M R M M R M R R M)}
     ]
-    assert MarsRovers.deploy_rovers({{5, 5}, []}, instructions) == [{1, 3, "N"}, {5, 1, "E"}]
+    plateau = MarsRovers.deploy_rovers(%MarsRovers.Plateau{}, instructions)
+    assert plateau.rovers == [{1, 3, "N"}, {5, 1, "E"}]
   end
 end
