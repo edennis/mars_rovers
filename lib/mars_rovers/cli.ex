@@ -22,9 +22,6 @@ defmodule MarsRovers.CLI do
           |> MarsRovers.deploy_rovers(instructions)
 
         plateau.rovers
-        |> Enum.map(fn {x, y, d} ->
-          "#{x} #{y} #{d}"
-        end)
         |> Enum.join("\n")
         |> IO.puts
       {:error, _} ->

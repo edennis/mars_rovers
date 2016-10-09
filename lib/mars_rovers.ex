@@ -1,4 +1,6 @@
 defmodule MarsRovers do
+  alias MarsRovers.State
+
   defmodule OutOfBoundsError do
     defexception message: "rover moved outside of plateau"
   end
@@ -23,35 +25,35 @@ defmodule MarsRovers do
     end)
   end
 
-  defp execute_command({x, y, direction}, "R", _) do
-    case direction do
-      "N" -> {x, y, "E"}
-      "S" -> {x, y, "W"}
-      "E" -> {x, y, "S"}
-      "W" -> {x, y, "N"}
+  defp execute_command(%State{} = state, "R", _) do
+    case state.direction do
+      "N" -> %State{state | direction: "E"}
+      "S" -> %State{state | direction: "W"}
+      "E" -> %State{state | direction: "S"}
+      "W" -> %State{state | direction: "N"}
     end
   end
-  defp execute_command({x, y, direction}, "L", _) do
-    case direction do
-      "N" -> {x, y, "W"}
-      "S" -> {x, y, "E"}
-      "E" -> {x, y, "N"}
-      "W" -> {x, y, "S"}
+  defp execute_command(%State{} = state, "L", _) do
+    case state.direction do
+      "N" -> %State{state | direction: "W"}
+      "S" -> %State{state | direction: "E"}
+      "E" -> %State{state | direction: "N"}
+      "W" -> %State{state | direction: "S"}
     end
   end
-  defp execute_command({x, y, direction}, "M", plateau_size) do
-    case direction do
-      "N" -> {x, y + 1, "N"}
-      "S" -> {x, y - 1, "S"}
-      "E" -> {x + 1, y, "E"}
-      "W" -> {x - 1, y, "W"}
+  defp execute_command(%State{} = state, "M", plateau_size) do
+    case state.direction do
+      "N" -> %State{state | y: state.y + 1}
+      "S" -> %State{state | y: state.y - 1}
+      "E" -> %State{state | x: state.x + 1}
+      "W" -> %State{state | x: state.x - 1}
     end
     |> verify_move!(plateau_size)
   end
 
-  defp verify_move!({x, y, _} = position, {max_x, max_y}) do
-    if x in 0..max_x and y in 0..max_y do
-      position
+  defp verify_move!(%State{} = state, {max_x, max_y}) do
+    if state.x in 0..max_x and state.y in 0..max_y do
+      state
     else
       raise OutOfBoundsError
     end

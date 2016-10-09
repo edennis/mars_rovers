@@ -1,4 +1,6 @@
 defmodule MarsRovers.InputParser do
+  alias MarsRovers.State
+
   defmodule ParseError do
     defexception message: "parse error"
   end
@@ -65,7 +67,11 @@ defmodule MarsRovers.InputParser do
   end
 
   defp to_position([x, y, direction]) do
-    {String.to_integer(x), String.to_integer(y), String.upcase(direction)}
+    %State{
+      x: String.to_integer(x),
+      y: String.to_integer(y),
+      direction: String.upcase(direction)
+    }
   end
 
   defp to_commands([commands]) do
