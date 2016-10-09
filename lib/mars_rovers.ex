@@ -15,10 +15,11 @@ defmodule MarsRovers do
     %Plateau{plateau | rovers: rovers}
   end
 
-  def execute_commands(position, commands, plateau_size) do
-    Enum.reduce(commands, position, fn cmd, pos ->
-      pos |> execute_command(cmd, plateau_size)
-    end)
+  def execute_commands(%State{} = state, [], _), do: state
+  def execute_commands(%State{} = state, [command | commands], plateau_size) do
+    state
+    |> execute_command(command, plateau_size)
+    |> execute_commands(commands, plateau_size)
   end
 
   defp execute_command(%State{} = state, "R", _) do
