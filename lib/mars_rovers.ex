@@ -1,12 +1,8 @@
 defmodule MarsRovers do
-  alias MarsRovers.State
+  alias MarsRovers.{Plateau, State}
 
   defmodule OutOfBoundsError do
     defexception message: "rover moved outside of plateau"
-  end
-
-  defmodule Plateau do
-    defstruct size: {5, 5}, rovers: []
   end
 
   def deploy_rovers(%Plateau{} = plateau, instructions) do
