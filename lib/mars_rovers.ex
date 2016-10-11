@@ -1,58 +1,22 @@
 defmodule MarsRovers do
   alias MarsRovers.{Plateau, State}
 
-  defmodule OutOfBoundsError do
-    defexception message: "rover moved outside of plateau"
-  end
-
   def deploy_rovers(%Plateau{} = plateau, instructions) do
-    rovers =
-      Enum.reduce(instructions, plateau.rovers, fn {position, commands}, acc ->
-        [execute_commands(position, commands, plateau.size) | acc]
+    {final_plateau, final_states} =
+      Enum.reduce(instructions, {plateau, []}, fn {state, commands}, {plateau, results} ->
+        {new_plateau, end_state} = deploy_rover(plateau, state, commands)
+        {new_plateau, [end_state | results]}
       end)
-      |> Enum.reverse
-
-    %Plateau{plateau | rovers: rovers}
+    {final_plateau, final_states |> Enum.reverse}
   end
 
-  def execute_commands(%State{} = state, [], _), do: state
-  def execute_commands(%State{} = state, [command | commands], plateau_size) do
-    state
-    |> execute_command(command, plateau_size)
-    |> execute_commands(commands, plateau_size)
+  defp deploy_rover(%Plateau{} = plateau, %State{} = state, []) do
+    plateau = Plateau.update(plateau, state.x, state.y, state.x, state.y, state)
+    {plateau, state}
   end
-
-  defp execute_command(%State{} = state, "R", _) do
-    case state.direction do
-      "N" -> %State{state | direction: "E"}
-      "S" -> %State{state | direction: "W"}
-      "E" -> %State{state | direction: "S"}
-      "W" -> %State{state | direction: "N"}
-    end
-  end
-  defp execute_command(%State{} = state, "L", _) do
-    case state.direction do
-      "N" -> %State{state | direction: "W"}
-      "S" -> %State{state | direction: "E"}
-      "E" -> %State{state | direction: "N"}
-      "W" -> %State{state | direction: "S"}
-    end
-  end
-  defp execute_command(%State{} = state, "M", plateau_size) do
-    case state.direction do
-      "N" -> %State{state | y: state.y + 1}
-      "S" -> %State{state | y: state.y - 1}
-      "E" -> %State{state | x: state.x + 1}
-      "W" -> %State{state | x: state.x - 1}
-    end
-    |> verify_move!(plateau_size)
-  end
-
-  defp verify_move!(%State{} = state, {max_x, max_y}) do
-    if state.x in 0..max_x and state.y in 0..max_y do
-      state
-    else
-      raise OutOfBoundsError
-    end
+  defp deploy_rover(%Plateau{} = plateau, %State{} = state, [command | commands]) do
+    new_state = State.apply_command(state, command)
+    Plateau.update(plateau, state.x, state.y, new_state.x, new_state.y, new_state)
+    deploy_rover(plateau, new_state, commands)
   end
 end

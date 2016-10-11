@@ -1,36 +1,46 @@
-alias MarsRovers.State
+alias MarsRovers.{Plateau, State}
 
 defmodule MarsRoversTest do
   use ExUnit.Case
   doctest MarsRovers
 
-  test "executing first data set gives expected results" do
+  setup do
+    [plateau: %Plateau{size: {5, 5}}]
+  end
+
+  test "empty instruction set deploys rover to plateau", context do
     state = %State{x: 1, y: 2, direction: "N"}
-    commands = ~w(L M L M L M L M M)
+    {_plateau, states} = MarsRovers.deploy_rovers(context[:plateau], [{state, []}])
 
-    assert MarsRovers.execute_commands(state, commands, {5, 5}) == %State{x: 1, y: 3, direction: "N"}
+    assert states == [state]
   end
 
-  test "executing second data set gives expected results" do
-    state = %State{x: 3, y: 3, direction: "E"}
-    commands = ~w(M M R M M R M R R M)
+  test "first data set", context do
+    instructions = [
+      {%State{x: 1, y: 2, direction: "N"}, ~w(L M L M L M L M M)}
+    ]
+    {_plateau, states} = MarsRovers.deploy_rovers(context[:plateau], instructions)
 
-    assert MarsRovers.execute_commands(state, commands, {5, 5}) == %State{x: 5, y: 1, direction: "E"}
+    assert states == [%State{x: 1, y: 3, direction: "N"}]
   end
 
-  test "error is raised when rover moves outside of plateau" do
-    assert_raise MarsRovers.OutOfBoundsError, fn ->
-      state = %State{x: 1, y: 1, direction: "W"}
-      MarsRovers.execute_commands(state, ~w(M M), {5, 5})
-    end
+  test "second data set", context do
+    instructions = [
+      {%State{x: 3, y: 3, direction: "E"}, ~w(M M R M M R M R R M)}
+    ]
+    {_plateau, states} = MarsRovers.deploy_rovers(context[:plateau], instructions)
+
+    assert states == [%State{x: 5, y: 1, direction: "E"}]
   end
 
-  test "executing multiple rovers on a plateau" do
+  test "deploy multiple rovers on a plateau" do
     instructions = [
       {%State{x: 1, y: 2, direction: "N"}, ~w(L M L M L M L M M)},
       {%State{x: 3, y: 3, direction: "E"}, ~w(M M R M M R M R R M)}
     ]
-    plateau = MarsRovers.deploy_rovers(%MarsRovers.Plateau{}, instructions)
-    assert plateau.rovers == [%State{x: 1, y: 3, direction: "N"}, %State{x: 5, y: 1, direction: "E"}]
+    {_plateau, states} = MarsRovers.deploy_rovers(%MarsRovers.Plateau{}, instructions)
+
+    assert states == [%State{x: 1, y: 3, direction: "N"},
+                      %State{x: 5, y: 1, direction: "E"}]
   end
 end

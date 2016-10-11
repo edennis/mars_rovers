@@ -17,13 +17,11 @@ defmodule MarsRovers.CLI do
       {:ok, contents} ->
         {plateau_size, instructions} = InputParser.parse(contents)
 
-        plateau =
+        {plateau, states} =
           %MarsRovers.Plateau{size: plateau_size}
           |> MarsRovers.deploy_rovers(instructions)
 
-        plateau.rovers
-        |> Enum.join("\n")
-        |> IO.puts
+        IO.puts Enum.join(states, "\n")
       {:error, _} ->
         IO.puts "couldn't read #{file}"
     end
