@@ -69,6 +69,6 @@ mix test
 
 ## Building and running the CLI
 ```
-mix script.build
+mix escript.build
 ./mars_rovers test/support/input.txt
 ```
