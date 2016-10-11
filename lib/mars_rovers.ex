@@ -11,12 +11,12 @@ defmodule MarsRovers do
   end
 
   defp deploy_rover(%Plateau{} = plateau, %State{} = state, []) do
-    plateau = Plateau.update(plateau, state.x, state.y, state.x, state.y, state)
+    {:ok, plateau} = Plateau.update(plateau, state.x, state.y, state.x, state.y, state)
     {plateau, state}
   end
   defp deploy_rover(%Plateau{} = plateau, %State{} = state, [command | commands]) do
     new_state = State.apply_command(state, command)
-    Plateau.update(plateau, state.x, state.y, new_state.x, new_state.y, new_state)
+    {:ok, plateau} = Plateau.update(plateau, state.x, state.y, new_state.x, new_state.y, new_state)
     deploy_rover(plateau, new_state, commands)
   end
 end
