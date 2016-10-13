@@ -6,7 +6,7 @@ come up with several iterations to familiarize myself with various
 libraries and frameworks:
 
 - [x] Solve the problem using only modules, functions and data.
-- [ ] Setup `mix`; create a CLI (file IO) and test with `ExUnit`
+- [x] Setup `mix`; create a CLI (file IO) and test with `ExUnit`
 - [ ] OTP: Design a concurrent solution that has rovers running in parallel
 - [ ] Phoenix: Visualization in a single-page app using Channels for live updates.
 
