@@ -1,4 +1,5 @@
-alias MarsRovers.{Plateau, State}
+alias MarsRovers.Plateau
+alias MarsRovers.Rover.Position
 
 defmodule MarsRovers.Plateau do
   defstruct size: {5, 5}, rovers: %{}
@@ -55,8 +56,8 @@ defmodule MarsRovers.Plateau do
       |> Enum.join("\n")
     end
 
-    defp cell_to_string(%State{} = state) do
-      case state.direction do
+    defp cell_to_string(%Position{} = position) do
+      case position.direction do
         "N" -> "^"
         "S" -> "v"
         "E" -> ">"

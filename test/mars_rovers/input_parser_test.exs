@@ -1,4 +1,5 @@
-alias MarsRovers.{InputParser, State}
+alias MarsRovers.InputParser
+alias MarsRovers.Rover.Position
 
 defmodule MarsRovers.InputParserTest do
   use ExUnit.Case, async: true
@@ -45,15 +46,15 @@ defmodule MarsRovers.InputParserTest do
 
   describe "InputParser.parse_position/1" do
     test "parses position" do
-      assert InputParser.parse_position("1 2 N") == %State{x: 1, y: 2, direction: "N"}
+      assert InputParser.parse_position("1 2 N") == %Position{x: 1, y: 2, direction: "N"}
     end
 
     test "ignores trailing, leading and excess whitespace" do
-      assert InputParser.parse_position(" 1\t2 N ") == %State{x: 1, y: 2, direction: "N"}
+      assert InputParser.parse_position(" 1\t2 N ") == %Position{x: 1, y: 2, direction: "N"}
     end
 
     test "ignores case" do
-      assert InputParser.parse_position("1 2 n") == %State{x: 1, y: 2, direction: "N"}
+      assert InputParser.parse_position("1 2 n") == %Position{x: 1, y: 2, direction: "N"}
     end
 
     test "raises parse error if input isn't valid (foobar)" do
@@ -87,8 +88,8 @@ defmodule MarsRovers.InputParserTest do
     test "parses contents of file" do
       {:ok, input} = File.read("test/support/input.txt")
       assert InputParser.parse(input) == {{5, 5}, [
-                                          {%State{x: 1, y: 2, direction: "N"}, ["L", "M", "L", "M", "L", "M", "L", "M", "M"]},
-                                          {%State{x: 3, y: 3, direction: "E"}, ["M", "M", "R", "M", "M", "R", "M", "R", "R", "M"]}
+                                          {%Position{x: 1, y: 2, direction: "N"}, ["L", "M", "L", "M", "L", "M", "L", "M", "M"]},
+                                          {%Position{x: 3, y: 3, direction: "E"}, ["M", "M", "R", "M", "M", "R", "M", "R", "R", "M"]}
                                           ]}
     end
   end
