@@ -1,4 +1,4 @@
-alias MarsRovers.Plateau
+alias MarsRovers.{Plateau, State}
 
 defmodule MarsRovers.Plateau do
   defstruct size: {5, 5}, rovers: %{}
@@ -41,5 +41,28 @@ defmodule MarsRovers.Plateau do
     else
       {:error, :cell_occupied}
     end
+  end
+
+  defimpl String.Chars, for: MarsRovers.Plateau do
+    def to_string(plateau) do
+      {max_x, max_y} = plateau.size
+      for y <- max_y..0 do
+        for x <- 0..max_x do
+          cell_to_string(plateau.rovers[{x, y}])
+        end
+        |> Enum.join(" ")
+      end
+      |> Enum.join("\n")
+    end
+
+    defp cell_to_string(%State{} = state) do
+      case state.direction do
+        "N" -> "^"
+        "S" -> "v"
+        "E" -> ">"
+        "W" -> "<"
+      end
+    end
+    defp cell_to_string(_), do: "-"
   end
 end
