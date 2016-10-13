@@ -4,46 +4,67 @@ defmodule MarsRovers.CLI do
   @bin_name :mars_rovers
 
   def main(args) do
-    args |> parse_args |> process
+    args
+    |> parse_into_options
+    |> options_to_values
+    |> process
+    |> visualize
   end
 
-  defp parse_args(args) do
-    parse =
-      with switches = [help: :boolean, version: :boolean],
-           aliases  = [h: :help, v: :version],
-      do:
-           OptionParser.parse(args, switches: switches, aliases: aliases)
+  defp parse_into_options(args) do
+    with switches = [help: :boolean, random: :boolean, version: :boolean],
+         aliases  = [h: :help, r: :random, v: :version],
+    do:
+         OptionParser.parse(args, switches: switches, aliases: aliases)
+  end
 
-    case parse do
+  defp options_to_values(options) do
+    case options do
       {[{switch, true}], _, _} -> switch
       {_, [filename], _}       -> [file: filename]
-      default                  -> :help
+      _default                 -> :help
     end
   end
 
   def process(:help) do
-    IO.write """
-    Usage: #{@bin_name} [-h | --help] [-v | --version] <input_file>
-    """
+    "Usage: #{@bin_name} [-h | --help] [-r | --random] [-v | --version] <input_file>"
   end
 
   def process(:version) do
     {:ok, version} = :application.get_key(:mars_rovers, :vsn)
-    IO.puts "#{@bin_name} version #{version}"
+    "#{@bin_name} version #{version}"
   end
 
   def process(file: file) do
     case File.read(file) do
       {:ok, contents} ->
         {plateau_size, instructions} = InputParser.parse(contents)
-
-        {plateau, states} =
-          %MarsRovers.Plateau{size: plateau_size}
-          |> MarsRovers.deploy_rovers(instructions)
-
-        IO.puts Enum.join(states, "\n")
+        {_plateau, positions} = process_instructions(plateau_size, instructions)
+        positions
       {:error, _} ->
-        IO.puts "couldn't read #{file}"
+        "couldn't read #{file}"
     end
   end
+
+  def process(:random) do
+    max_x = 5
+    max_y = 5
+    instructions =
+      for x <- 0..max_x, y <- 0..max_y do
+        %MarsRovers.Rover.Position{x: x, y: y, direction: "N"}
+      end
+      |> Enum.take_random(3)
+      |> Enum.map(&({&1, MarsRovers.Command.random_sequence(5)}))
+
+    {_plateau, positions} = process_instructions({max_x, max_y}, instructions)
+    positions
+  end
+
+  defp process_instructions(plateau_size, instructions) do
+    %MarsRovers.Plateau{size: plateau_size}
+    |> MarsRovers.deploy_rovers(instructions)
+  end
+
+  defp visualize(string) when is_binary(string), do: IO.puts string
+  defp visualize(list) when is_list(list), do: Enum.join(list, "\n") |> IO.puts
 end

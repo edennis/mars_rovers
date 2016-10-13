@@ -5,12 +5,12 @@ defmodule MarsRovers.CLITest do
 
   import ExUnit.CaptureIO
 
-  describe "CLI.process/1" do
+  describe "CLI.main/1" do
     test "input from file" do
       {:ok, contents} = File.read("test/support/output.txt")
 
       assert capture_io(fn ->
-        CLI.process(file: "test/support/input.txt")
+        CLI.main(["test/support/input.txt"])
       end) == contents
     end
   end

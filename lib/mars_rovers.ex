@@ -12,12 +12,18 @@ defmodule MarsRovers do
   end
 
   defp deploy_rover(%Plateau{} = plateau, %Position{} = position, []) do
-    {:ok, plateau} = Plateau.update(plateau, position.x, position.y, position.x, position.y, position)
-    {plateau, position}
+    Plateau.update(plateau, position.x, position.y, position.x, position.y, position)
+    |> case do
+      {:ok, plateau} -> {plateau, position}
+      {:error, _}    -> {plateau, position}
+    end
   end
   defp deploy_rover(%Plateau{} = plateau, %Position{} = position, [command | commands]) do
     new_position = Position.apply_command(position, command)
-    {:ok, plateau} = Plateau.update(plateau, position.x, position.y, new_position.x, new_position.y, new_position)
-    deploy_rover(plateau, new_position, commands)
+    Plateau.update(plateau, position.x, position.y, new_position.x, new_position.y, new_position)
+    |> case do
+      {:ok, plateau} -> deploy_rover(plateau, new_position, commands)
+      {:error, _}    -> {plateau, position}
+    end
   end
 end
