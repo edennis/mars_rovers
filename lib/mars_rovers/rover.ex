@@ -16,12 +16,22 @@ defmodule MarsRovers.Rover do
   end
 
   defimpl String.Chars, for: MarsRovers.Rover do
+    import IO.ANSI, only: [green: 0, yellow: 0, red: 0, default_color: 0]
+
     def to_string(%Rover{error: error} = rover) when not is_nil(error) do
-      "#{rover.position} (error: #{error})"
+      "#{rover.position} (error: #{error}, commands: #{commands(rover)})"
     end
 
     def to_string(rover) do
       "#{rover.position}"
+    end
+
+    defp commands(rover) do
+      failed_command = hd(rover.commands_remaining)
+      [ green,  rover.commands_executed,
+        red,    failed_command,
+        yellow, rover.commands_remaining,
+        default_color ]
     end
   end
 end
