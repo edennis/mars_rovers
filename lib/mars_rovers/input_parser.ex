@@ -7,8 +7,8 @@ defmodule MarsRovers.InputParser do
   end
 
   @boundaries_regex ~r/\A\s*(\d+)\s+(\d+)\s*\z/
-  @postion_regex    ~r/\A\s*(\d+)\s+(\d+)\s+([NESW])\s*\z/i
-  @commands_regex   ~r/\A\s*([LRM]+)\s*\z/i
+  @postion_regex    ~r/\A\s*(\d+)\s+(\d+)\s+([NESW])\s*\z/
+  @commands_regex   ~r/\A\s*([LRM]+)\s*\z/
 
   def parse(str) do
     str
@@ -71,11 +71,11 @@ defmodule MarsRovers.InputParser do
     %Position{
       x: String.to_integer(x),
       y: String.to_integer(y),
-      direction: String.upcase(direction)
+      direction: direction
     }
   end
 
   defp to_commands([commands]) do
-    commands |> String.upcase |> String.graphemes
+    commands |> String.graphemes
   end
 end

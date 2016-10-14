@@ -54,10 +54,6 @@ defmodule MarsRovers.InputParserTest do
       assert InputParser.parse_position(" 1\t2 N ") == %Position{x: 1, y: 2, direction: "N"}
     end
 
-    test "ignores case" do
-      assert InputParser.parse_position("1 2 n") == %Position{x: 1, y: 2, direction: "N"}
-    end
-
     test "raises parse error if input isn't valid (foobar)" do
       assert_raise InputParser.ParseError, fn ->
         InputParser.parse_position("foobar")
@@ -72,10 +68,6 @@ defmodule MarsRovers.InputParserTest do
 
     test "ignores trailing and leading whitespace" do
       assert InputParser.parse_commands("\tLMLM ") == ["L", "M", "L", "M"]
-    end
-
-    test "ignores case" do
-      assert InputParser.parse_commands("lmlm") == ["L", "M", "L", "M"]
     end
 
     test "raises parse error if input isn't valid (foobar)" do
