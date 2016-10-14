@@ -1,4 +1,6 @@
 alias MarsRovers.InputParser
+alias MarsRovers.Plateau
+alias MarsRovers.Rover
 
 defmodule MarsRovers.CLI do
   @bin_name :mars_rovers
@@ -38,8 +40,8 @@ defmodule MarsRovers.CLI do
   def process(file: file) do
     case File.read(file) do
       {:ok, contents} ->
-        {plateau_size, instructions} = InputParser.parse(contents)
-        {_plateau, positions} = process_instructions(plateau_size, instructions)
+        {plateau_size, rovers} = InputParser.parse(contents)
+        {_plateau, positions} = MarsRovers.deploy_rovers(%Plateau{size: plateau_size}, rovers)
         positions
       {:error, _} ->
         "couldn't read #{file}"
@@ -49,20 +51,15 @@ defmodule MarsRovers.CLI do
   def process(:random) do
     max_x = 5
     max_y = 5
-    instructions =
+    rovers =
       for x <- 0..max_x, y <- 0..max_y do
-        %MarsRovers.Rover.Position{x: x, y: y, direction: "N"}
+        commands = MarsRovers.Command.random_sequence(5)
+        Rover.new(x, y, "N", commands)
       end
       |> Enum.take_random(3)
-      |> Enum.map(&({&1, MarsRovers.Command.random_sequence(5)}))
 
-    {_plateau, positions} = process_instructions({max_x, max_y}, instructions)
+    {_plateau, positions} = MarsRovers.deploy_rovers(%Plateau{size: {max_x, max_y}}, rovers)
     positions
-  end
-
-  defp process_instructions(plateau_size, instructions) do
-    %MarsRovers.Plateau{size: plateau_size}
-    |> MarsRovers.deploy_rovers(instructions)
   end
 
   defp visualize(string) when is_binary(string), do: IO.puts string

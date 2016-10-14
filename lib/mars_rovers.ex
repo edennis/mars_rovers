@@ -1,29 +1,33 @@
 defmodule MarsRovers do
   alias MarsRovers.Plateau
+  alias MarsRovers.Rover
   alias MarsRovers.Rover.Position
 
-  def deploy_rovers(%Plateau{} = plateau, instructions) do
-    {final_plateau, final_positions} =
-      Enum.reduce(instructions, {plateau, []}, fn {position, commands}, {plateau, results} ->
-        {new_plateau, end_position} = deploy_rover(plateau, position, commands)
-        {new_plateau, [end_position | results]}
+  def deploy_rovers(%Plateau{} = plateau, rovers) do
+    {final_plateau, final_rovers} =
+      Enum.reduce(rovers, {plateau, []}, fn %Rover{} = rover, {plateau, results} ->
+        {new_plateau, new_rover} = deploy_rover(plateau, rover)
+        {new_plateau, [new_rover | results]}
       end)
-    {final_plateau, final_positions |> Enum.reverse}
+    {final_plateau, final_rovers |> Enum.reverse}
   end
 
-  defp deploy_rover(%Plateau{} = plateau, %Position{} = position, []) do
-    Plateau.update(plateau, position.x, position.y, position.x, position.y, position)
-    |> case do
-      {:ok, plateau} -> {plateau, position}
-      {:error, _}    -> {plateau, position}
+  defp deploy_rover(%Plateau{} = plateau, %Rover{position: position} = rover) do
+    case Plateau.put(plateau, position.x, position.y, position) do
+      {:ok, plateau}    -> execute_commands(plateau, rover)
+      {:error, reason}  -> {plateau, %Rover{rover | error: reason}}
     end
   end
-  defp deploy_rover(%Plateau{} = plateau, %Position{} = position, [command | commands]) do
+
+  defp execute_commands(%Plateau{} = plateau, %Rover{commands: []} = rover) do
+    {plateau, rover}
+  end
+  defp execute_commands(%Plateau{} = plateau, %Rover{commands: [command | commands], position: position} = rover) do
     new_position = Position.apply_command(position, command)
     Plateau.update(plateau, position.x, position.y, new_position.x, new_position.y, new_position)
     |> case do
-      {:ok, plateau} -> deploy_rover(plateau, new_position, commands)
-      {:error, _}    -> {plateau, position}
+      {:ok, plateau}    -> execute_commands(plateau, %Rover{rover | commands: commands, position: new_position})
+      {:error, reason}  -> {plateau, %Rover{rover | error: reason}}
     end
   end
 end

@@ -1,4 +1,5 @@
 defmodule MarsRovers.InputParser do
+  alias MarsRovers.Rover
   alias MarsRovers.Rover.Position
 
   defmodule ParseError do
@@ -19,14 +20,14 @@ defmodule MarsRovers.InputParser do
     {[boundaries], rest} = Enum.split(enumerable, 1)
 
     boundaries = parse_boundaries(boundaries)
-    instructions =
+    rovers =
       rest
       |> Enum.chunk(2)
       |> Enum.map(fn [position, commands] ->
-        {parse_position(position), parse_commands(commands)}
+        Rover.new(parse_position(position), parse_commands(commands))
       end)
 
-    {boundaries, instructions}
+    {boundaries, rovers}
   end
 
   def parse_boundaries(str) do

@@ -1,4 +1,5 @@
 alias MarsRovers.InputParser
+alias MarsRovers.Rover
 alias MarsRovers.Rover.Position
 
 defmodule MarsRovers.InputParserTest do
@@ -88,8 +89,8 @@ defmodule MarsRovers.InputParserTest do
     test "parses contents of file" do
       {:ok, input} = File.read("test/support/input.txt")
       assert InputParser.parse(input) == {{5, 5}, [
-                                          {%Position{x: 1, y: 2, direction: "N"}, ["L", "M", "L", "M", "L", "M", "L", "M", "M"]},
-                                          {%Position{x: 3, y: 3, direction: "E"}, ["M", "M", "R", "M", "M", "R", "M", "R", "R", "M"]}
+                                          Rover.new(1, 2, "N", ["L", "M", "L", "M", "L", "M", "L", "M", "M"]),
+                                          Rover.new(3, 3, "E", ["M", "M", "R", "M", "M", "R", "M", "R", "R", "M"])
                                           ]}
     end
   end
