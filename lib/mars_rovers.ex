@@ -19,14 +19,14 @@ defmodule MarsRovers do
     end
   end
 
-  defp execute_commands(%Plateau{} = plateau, %Rover{commands: []} = rover) do
+  defp execute_commands(%Plateau{} = plateau, %Rover{commands_remaining: []} = rover) do
     {plateau, rover}
   end
-  defp execute_commands(%Plateau{} = plateau, %Rover{commands: [command | commands], position: position} = rover) do
+  defp execute_commands(%Plateau{} = plateau, %Rover{commands_remaining: [command | commands], position: position} = rover) do
     new_position = Position.apply_command(position, command)
     Plateau.update(plateau, position.x, position.y, new_position.x, new_position.y, new_position)
     |> case do
-      {:ok, plateau}    -> execute_commands(plateau, %Rover{rover | commands: commands, position: new_position})
+      {:ok, plateau}    -> execute_commands(plateau, %Rover{rover | commands_remaining: commands, commands_executed: rover.commands_executed ++ [command], position: new_position})
       {:error, reason}  -> {plateau, %Rover{rover | error: reason}}
     end
   end

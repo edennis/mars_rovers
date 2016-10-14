@@ -2,10 +2,13 @@ alias MarsRovers.Rover
 alias MarsRovers.Rover.Position
 
 defmodule MarsRovers.Rover do
-  defstruct [position: Position, commands: [], error: nil]
+  defstruct position: Position,
+            commands_remaining: [],
+            commands_executed: [],
+            error: nil
 
   def new(%Position{} = position, commands) do
-    %MarsRovers.Rover{position: position, commands: commands}
+    %MarsRovers.Rover{position: position, commands_remaining: commands}
   end
 
   def new(x, y, direction, commands) do
