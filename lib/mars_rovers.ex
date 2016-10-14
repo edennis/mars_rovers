@@ -26,8 +26,12 @@ defmodule MarsRovers do
     new_position = Position.apply_command(position, command)
     Plateau.update(plateau, position.x, position.y, new_position.x, new_position.y, new_position)
     |> case do
-      {:ok, plateau}    -> execute_commands(plateau, %Rover{rover | commands_remaining: commands, commands_executed: rover.commands_executed ++ [command], position: new_position})
-      {:error, reason}  -> {plateau, %Rover{rover | error: reason}}
+      {:ok, plateau}
+        -> execute_commands(plateau, %Rover{rover | commands_remaining: commands,
+                                                    commands_executed: rover.commands_executed ++ [command],
+                                                    position: new_position})
+      {:error, reason}
+        -> {plateau, %Rover{rover | error: reason}}
     end
   end
 end
