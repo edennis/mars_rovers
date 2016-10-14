@@ -41,8 +41,8 @@ defmodule MarsRovers.CLI do
     case File.read(file) do
       {:ok, contents} ->
         {plateau_size, rovers} = InputParser.parse(contents)
-        {_plateau, positions} = MarsRovers.deploy_rovers(%Plateau{size: plateau_size}, rovers)
-        positions
+        {_plateau, new_rovers} = MarsRovers.deploy_rovers(%Plateau{size: plateau_size}, rovers)
+        new_rovers
       {:error, _} ->
         "couldn't read #{file}"
     end
@@ -58,8 +58,8 @@ defmodule MarsRovers.CLI do
       end
       |> Enum.take_random(3)
 
-    {_plateau, positions} = MarsRovers.deploy_rovers(%Plateau{size: {max_x, max_y}}, rovers)
-    positions
+    {_plateau, new_rovers} = MarsRovers.deploy_rovers(%Plateau{size: {max_x, max_y}}, rovers)
+    new_rovers
   end
 
   defp visualize(string) when is_binary(string), do: IO.puts string
