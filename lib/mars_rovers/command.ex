@@ -12,5 +12,5 @@ defmodule MarsRovers.Command do
   def random_command("R"), do: Enum.random(["R", "M"])
   def random_command("L"), do: Enum.random(["L", "M"])
   def random_command("M"), do: Enum.random(["R", "L", "M"])
-  def random_command(_ \\ nil), do: random_command("M")
+  def random_command(nil), do: random_command("M")
 end
