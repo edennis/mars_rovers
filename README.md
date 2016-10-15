@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/edennis/mars_rovers.svg?branch=master)](https://travis-ci.org/edennis/mars_rovers)
+
 # Mars Rovers
 
 This is an implementation of the mars rovers kata in Elixir which
