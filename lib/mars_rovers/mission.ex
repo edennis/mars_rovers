@@ -11,18 +11,20 @@ defmodule MarsRovers.Mission do
     end
   end
 
-  def random do
-    max_x = 5
-    max_y = 5
+  def random(opts \\ []) do
+    max_x = Keyword.get(opts, :width, 5)
+    max_y = Keyword.get(opts, :height, 5)
+    num_rovers   = Keyword.get(opts, :rovers, 3)
+    num_commands = Keyword.get(opts, :commands, 5)
+
     rovers =
       for x <- 0..max_x, y <- 0..max_y do
-        commands = Command.random_sequence(5)
+        commands = Command.random_sequence(num_commands)
         Rover.new(x, y, "N", commands)
       end
-      |> Enum.take_random(3)
+      |> Enum.take_random(num_rovers)
 
     {_plateau, new_rovers} = MarsRovers.deploy_rovers(%Plateau{size: {max_x, max_y}}, rovers)
     new_rovers
-
   end
 end
