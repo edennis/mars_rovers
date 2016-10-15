@@ -2,9 +2,13 @@ alias MarsRovers.{Command, InputParser, Plateau, Rover}
 
 defmodule MarsRovers.Mission do
   def from_input(input) do
-    {plateau_size, rovers} = InputParser.parse(input)
-    {_plateau, new_rovers} = MarsRovers.deploy_rovers(%Plateau{size: plateau_size}, rovers)
-    new_rovers
+    case InputParser.parse(input) do
+      {:error, reason}
+        -> reason
+      {plateau, rovers}
+        -> {_plateau, new_rovers} = MarsRovers.deploy_rovers(plateau, rovers)
+           new_rovers
+    end
   end
 
   def random do

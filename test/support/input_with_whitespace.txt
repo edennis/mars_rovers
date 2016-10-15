@@ -1,0 +1,18 @@
+5
+5
+1 2 N
+L  ML     ML MLMM
+
+
+3
+3
+     E
+
+
+MM
+R MM RM   R
+
+
+
+
+RM
