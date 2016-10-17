@@ -19,10 +19,13 @@ defmodule MarsRovers.Mission do
 
     rovers =
       for x <- 0..max_x, y <- 0..max_y do
-        commands = Command.random_sequence(num_commands)
-        Rover.new(x, y, "N", commands)
+        {x, y}
       end
       |> Enum.take_random(num_rovers)
+      |> Enum.map(fn {x, y} ->
+        commands = Command.random_sequence(num_commands)
+        Rover.new(x, y, "N", commands)
+      end)
 
     {_plateau, new_rovers} = MarsRovers.deploy_rovers(%Plateau{size: {max_x, max_y}}, rovers)
     new_rovers
