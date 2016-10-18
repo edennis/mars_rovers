@@ -1,16 +1,12 @@
 defmodule MarsRovers.Command do
   def random_sequence(length) do
-    random_sequence(length, [])
+    random_command
+    |> Stream.iterate(&random_command/1)
+    |> Enum.take(length)
   end
 
-  defp random_sequence(0, acc), do: acc
-  defp random_sequence(length, acc) do
-    cmd = acc |> List.first |> random_command
-    random_sequence(length - 1, [cmd | acc])
-  end
-
-  def random_command("R"), do: Enum.random(["R", "M"])
-  def random_command("L"), do: Enum.random(["L", "M"])
-  def random_command("M"), do: Enum.random(["R", "L", "M"])
-  def random_command(nil), do: random_command("M")
+  defp random_command(_ \\ "M")
+  defp random_command("R"), do: Enum.random(["R", "M"])
+  defp random_command("L"), do: Enum.random(["L", "M"])
+  defp random_command("M"), do: Enum.random(["R", "L", "M"])
 end
