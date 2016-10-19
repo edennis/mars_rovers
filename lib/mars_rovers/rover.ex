@@ -27,10 +27,10 @@ defmodule MarsRovers.Rover do
     end
 
     defp commands(rover) do
-      failed_command = hd(rover.commands_remaining)
+      [failed | remaining] = rover.commands_remaining
       [ green,  rover.commands_executed,
-        red,    failed_command,
-        yellow, rover.commands_remaining,
+        red,    failed,
+        yellow, remaining,
         default_color ]
     end
   end
