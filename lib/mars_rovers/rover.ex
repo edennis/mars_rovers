@@ -7,11 +7,11 @@ defmodule MarsRovers.Rover do
             commands_executed: [],
             error: nil
 
-  def new(%Position{} = position, commands) do
+  def new(%Position{} = position, commands \\ []) do
     %MarsRovers.Rover{position: position, commands_remaining: commands}
   end
 
-  def new(x, y, direction, commands) do
+  def new(x, y, direction, commands \\ []) do
     new(%Position{x: x, y: y, direction: direction}, commands)
   end
 

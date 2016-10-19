@@ -1,5 +1,5 @@
 defmodule MarsRovers.InputParser do
-  alias MarsRovers.{Plateau, Rover}
+  alias MarsRovers.Rover
   alias MarsRovers.Rover.Position
 
   def parse(string) do
@@ -31,7 +31,6 @@ defmodule MarsRovers.InputParser do
 
   defp to_structs(ast) do
     {plateau_size, rovers} = ast
-    plateau = %Plateau{size: plateau_size}
     rovers =
       rovers
       |> Enum.map(fn {{x, y, direction}, commands} ->
@@ -39,6 +38,6 @@ defmodule MarsRovers.InputParser do
         commands = commands |> Enum.map(&to_string/1)
         Rover.new(position, commands)
       end)
-    {plateau, rovers}
+    {plateau_size, rovers}
   end
 end

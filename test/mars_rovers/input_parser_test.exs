@@ -1,11 +1,11 @@
 alias MarsRovers.InputParser
-alias MarsRovers.{Plateau, Rover}
+alias MarsRovers.Rover
 
 defmodule MarsRovers.InputParserTest do
   use ExUnit.Case, async: true
 
   setup do
-    output = {%Plateau{size: {5, 5}}, [
+    output = {{5, 5}, [
               Rover.new(1, 2, "N", ["L", "M", "L", "M", "L", "M", "L", "M", "M"]),
               Rover.new(3, 3, "E", ["M", "M", "R", "M", "M", "R", "M", "R", "R", "M"])
               ]}

@@ -2,7 +2,60 @@ alias MarsRovers.Plateau
 alias MarsRovers.Rover.Position
 
 defmodule MarsRovers.Plateau do
-  defstruct size: {5, 5}, rovers: %{}
+  use GenServer
+
+  @default_size {5, 5}
+
+  defstruct size: @default_size, rovers: %{}
+
+  ## Client API
+
+  def start_link(opts \\ []) do
+    {plateau_size, opts} = Keyword.pop(opts, :size)
+    GenServer.start_link(__MODULE__, {:ok, size: plateau_size}, opts)
+  end
+
+  def deploy_rover(server, x, y, position) do
+    GenServer.call(server, {:deploy_rover, x, y, position})
+  end
+
+  def update_rover(server, x, y, new_x, new_y, position) do
+    GenServer.call(server, {:update_rover, x, y, new_x, new_y, position})
+  end
+
+  def get_state(server) do
+    GenServer.call(server, :get_state)
+  end
+
+  ## Server Callbacks
+
+  def init({:ok, opts}) do
+    {:ok, %Plateau{size: opts[:size] || @default_size}}
+  end
+
+  def handle_call({:deploy_rover, x, y, position}, _from, plateau) do
+    case put(plateau, x, y, position) do
+      {:ok, plateau} ->
+        {:reply, :ok, plateau}
+      {:error, reason} ->
+        {:reply, {:error, reason}, plateau}
+    end
+  end
+
+  def handle_call({:update_rover, x, y, new_x, new_y, position}, _from, plateau) do
+    case update(plateau, x, y, new_x, new_y, position) do
+      {:ok, plateau} ->
+        {:reply, :ok, plateau}
+      {:error, reason} ->
+        {:reply, {:error, reason}, plateau}
+    end
+  end
+
+  def handle_call(:get_state, _from, plateau) do
+    {:reply, plateau.rovers, plateau}
+  end
+
+  ## Internal
 
   def put(%Plateau{} = plateau, x, y, rover) do
     with :ok <- inside_plateau(plateau, x, y),
