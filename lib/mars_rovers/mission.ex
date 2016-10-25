@@ -47,7 +47,6 @@ defmodule MarsRovers.Mission do
         execute_commands(plateau, rover)
       {:error, reason} ->
         %Rover{rover | error: reason}
-      foo -> IO.puts foo
     end
   end
 
