@@ -1,3 +1,4 @@
+alias MarsRovers.EventManager
 alias MarsRovers.Plateau
 alias MarsRovers.Rover.Position
 
@@ -36,6 +37,7 @@ defmodule MarsRovers.Plateau do
   def handle_call({:deploy_rover, x, y, position}, _from, plateau) do
     case put(plateau, x, y, position) do
       {:ok, plateau} ->
+        GenEvent.sync_notify(EventManager, {:plateau_changed, plateau})
         {:reply, :ok, plateau}
       {:error, reason} ->
         {:reply, {:error, reason}, plateau}
@@ -45,6 +47,7 @@ defmodule MarsRovers.Plateau do
   def handle_call({:update_rover, x, y, new_x, new_y, position}, _from, plateau) do
     case update(plateau, x, y, new_x, new_y, position) do
       {:ok, plateau} ->
+        GenEvent.sync_notify(EventManager, {:plateau_changed, plateau})
         {:reply, :ok, plateau}
       {:error, reason} ->
         {:reply, {:error, reason}, plateau}

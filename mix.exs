@@ -12,7 +12,7 @@ defmodule MarsRovers.Mixfile do
   end
 
   def application do
-    [applications: [:logger]]
+    [mod: {MarsRovers, []}, applications: [:logger]]
   end
 
   defp escript do
