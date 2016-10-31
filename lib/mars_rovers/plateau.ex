@@ -1,5 +1,4 @@
 alias MarsRovers.EventManager
-alias MarsRovers.Plateau
 alias MarsRovers.Rover.Position
 
 defmodule MarsRovers.Plateau do
@@ -31,7 +30,7 @@ defmodule MarsRovers.Plateau do
   ## Server Callbacks
 
   def init({:ok, opts}) do
-    {:ok, %Plateau{size: opts[:size] || @default_size}}
+    {:ok, %__MODULE__{size: opts[:size] || @default_size}}
   end
 
   def handle_call({:deploy_rover, x, y, position}, _from, plateau) do
@@ -60,30 +59,30 @@ defmodule MarsRovers.Plateau do
 
   ## Internal
 
-  def put(%Plateau{} = plateau, x, y, rover) do
+  def put(%__MODULE__{} = plateau, x, y, rover) do
     with :ok <- inside_plateau(plateau, x, y),
          :ok <- cell_not_occupied(plateau, x, y),
          rovers   = plateau.rovers |> Map.put({x, y}, rover),
-         plateau  = %Plateau{plateau | rovers: rovers},
+         plateau  = %__MODULE__{plateau | rovers: rovers},
       do:
         {:ok, plateau}
   end
 
-  def delete(%Plateau{} = plateau, x, y) do
+  def delete(%__MODULE__{} = plateau, x, y) do
     rovers =
       plateau.rovers
       |> Map.delete({x, y})
 
-    %Plateau{plateau | rovers: rovers}
+    %__MODULE__{plateau | rovers: rovers}
   end
 
-  def update(%Plateau{} = plateau, x, y, new_x, new_y, rover) do
+  def update(%__MODULE__{} = plateau, x, y, new_x, new_y, rover) do
     plateau
     |> delete(x, y)
     |> put(new_x, new_y, rover)
   end
 
-  defp inside_plateau(%Plateau{} = plateau, x, y) do
+  defp inside_plateau(%__MODULE__{} = plateau, x, y) do
     {max_x, max_y} = plateau.size
     if x in 0..max_x and y in 0..max_y do
       :ok
@@ -92,7 +91,7 @@ defmodule MarsRovers.Plateau do
     end
   end
 
-  defp cell_not_occupied(%Plateau{} = plateau, x, y) do
+  defp cell_not_occupied(%__MODULE__{} = plateau, x, y) do
     if plateau.rovers[{x, y}] == nil do
       :ok
     else
@@ -100,7 +99,7 @@ defmodule MarsRovers.Plateau do
     end
   end
 
-  defimpl String.Chars, for: MarsRovers.Plateau do
+  defimpl String.Chars, for: __MODULE__ do
     def to_string(plateau) do
       {max_x, max_y} = plateau.size
       for y <- max_y..0 do

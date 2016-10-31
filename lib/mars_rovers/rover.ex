@@ -1,4 +1,3 @@
-alias MarsRovers.Rover
 alias MarsRovers.Rover.Position
 
 defmodule MarsRovers.Rover do
@@ -8,23 +7,20 @@ defmodule MarsRovers.Rover do
             error: nil
 
   def new(%Position{} = position, commands \\ []) do
-    %MarsRovers.Rover{position: position, commands_remaining: commands}
+    %__MODULE__{position: position, commands_remaining: commands}
   end
 
   def new(x, y, direction, commands \\ []) do
     new(%Position{x: x, y: y, direction: direction}, commands)
   end
 
-  defimpl String.Chars, for: MarsRovers.Rover do
+  defimpl String.Chars, for: __MODULE__ do
     import IO.ANSI, only: [green: 0, yellow: 0, red: 0, default_color: 0]
 
-    def to_string(%Rover{error: error} = rover) when not is_nil(error) do
-      "#{rover.position} (error: #{error}, commands: #{commands(rover)})"
-    end
-
-    def to_string(rover) do
-      "#{rover.position}"
-    end
+    def to_string(%{error: nil} = rover),
+      do: "#{rover.position}"
+    def to_string(%{error: error} = rover),
+      do: "#{rover.position} (error: #{error}, commands: #{commands(rover)})"
 
     defp commands(rover) do
       [failed | remaining] = rover.commands_remaining
