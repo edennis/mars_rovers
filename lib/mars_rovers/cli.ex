@@ -20,18 +20,10 @@ defmodule MarsRovers.CLI do
          OptionParser.parse(args, switches: switches, aliases: aliases)
   end
 
-  defp options_to_values(options) do
-    {switches, args, _unrecognized} = options
-    switches = Map.new(switches)
-    cond do
-      length(args) == 1 ->
-        Map.merge(%{file: hd(args)}, switches)
-      map_size(switches) > 0 ->
-        switches
-      true ->
-        :usage
-    end
-  end
+  defp options_to_values({switches, [file], _}),
+    do: options_to_values({Keyword.merge(switches, [file: file]), [], []})
+  defp options_to_values({switches, _, _}),
+    do: Map.new(switches)
 
   defp setup_visualizer(%{plateau: true} = opts) do
     GenEvent.add_handler(MarsRovers.EventManager, MarsRovers.Visualizers.Plateau, [])
@@ -44,17 +36,19 @@ defmodule MarsRovers.CLI do
     "#{@bin_name} version #{version}"
   end
 
-  def process(%{file: file}) do
+  def process(%{file: file} = opts) do
     case File.read(file) do
       {:ok, contents} ->
         MarsRovers.Mission.from_input(contents)
+        |> suppress_output(opts)
       {:error, _} ->
-        "couldn't read #{file}"
+        {:error, "couldn't read #{file}"}
     end
   end
 
   def process(%{simulate: true} = opts) do
     MarsRovers.Mission.random(opts |> Keyword.new)
+    |> suppress_output(opts)
   end
 
   def process(_) do
@@ -73,6 +67,17 @@ defmodule MarsRovers.CLI do
     """
   end
 
-  defp visualize(string) when is_binary(string), do: IO.puts string
-  defp visualize(list) when is_list(list), do: Enum.join(list, "\n") |> IO.puts
+  defp suppress_output(_, %{plateau: true}),
+    do: :nothing
+  defp suppress_output(output, _),
+    do: output
+
+  defp visualize({:error, message}),
+    do: IO.puts :stderr, "Error: #{message}"
+  defp visualize(string) when is_binary(string),
+    do: IO.puts string
+  defp visualize(list) when is_list(list),
+    do: IO.puts Enum.join(list, "\n")
+  defp visualize(:nothing),
+    do: nil
 end
