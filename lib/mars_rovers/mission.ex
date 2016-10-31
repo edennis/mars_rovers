@@ -33,12 +33,13 @@ defmodule MarsRovers.Mission do
   end
 
   def deploy_rovers(plateau, rovers) do
-    final_rovers =
-      Enum.reduce(rovers, [], fn %Rover{} = rover, results ->
-        new_rover = deploy_rover(plateau, rover)
-        [new_rover | results]
-      end)
-    final_rovers |> Enum.reverse
+    rovers
+    |> Enum.map(fn rover ->
+      Task.async(fn -> deploy_rover(plateau, rover) end)
+    end)
+    |> Enum.map(fn pid ->
+      Task.await(pid)
+    end)
   end
 
   defp deploy_rover(plateau, %Rover{position: position} = rover) do

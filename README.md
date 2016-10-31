@@ -11,7 +11,7 @@ libraries and frameworks:
 
 - [x] Solve the problem using only modules, functions and data.
 - [x] Setup `mix`; create a CLI (file IO) and test with `ExUnit`
-- [ ] OTP: Design a concurrent solution that has rovers running in parallel
+- [x] OTP: Design a concurrent solution that has rovers running in parallel
 - [ ] Phoenix: Visualization in a single-page app using Channels for live updates.
 
 
