@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.org/edennis/mars_rovers.svg?branch=master)](https://travis-ci.org/edennis/mars_rovers)
+[![Coverage Status](https://coveralls.io/repos/github/edennis/mars_rovers/badge.svg?branch=master)](https://coveralls.io/github/edennis/mars_rovers?branch=master)
+
 
 # Mars Rovers
 

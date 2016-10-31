@@ -8,7 +8,8 @@ defmodule MarsRovers.Mixfile do
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      escript: escript,
-     deps: deps]
+     deps: deps,
+     test_coverage: [tool: ExCoveralls]]
   end
 
   def application do
@@ -20,6 +21,6 @@ defmodule MarsRovers.Mixfile do
   end
 
   defp deps do
-    []
+    [{:excoveralls, "~> 0.5", only: :test}]
   end
 end
